@@ -1,0 +1,3 @@
+1) Создать файл ".env" и в него добавить:
+BOT_TOKEN=12345678:AbCDEF_gEodJGIfIeFDhjvUI...
+ADMIN_IDS=123456,789101112

@@ -1,0 +1,5 @@
+aiogram==3.3.0
+loguru==0.7.2
+peewee==3.17.0
+playwright==1.41.1
+python-dotenv==1.0.1
