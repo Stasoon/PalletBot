@@ -64,7 +64,7 @@ async def handle_confirm_request(callback: CallbackQuery, callback_data: PostReq
         '- участника сделки \n'
         '- условия сделки \n'
         '- ТУ товара \n\n'
-        f'<a href="{channel_url}"><b>PalletPrice | Биржа паллет</b></a> 👈'
+        f'<b>Биржа <a href="{channel_url}">PalletPrice</a></b>'
     )
     text = f"<b>Заявка №{publication.number}</b> \n\n{post_text} \n\n{footer_text}"
 
