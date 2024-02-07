@@ -17,7 +17,7 @@ class UserMessages:
 
     @staticmethod
     def ask_for_delivery_terms() -> str:
-        return 'Выберите условия доставки:'
+        return 'Выберите условия поставки:'
 
     @staticmethod
     def ask_for_pickup_address() -> str:

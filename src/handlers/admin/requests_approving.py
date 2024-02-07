@@ -4,7 +4,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from src.database.models import PostRequest, PostPublication
 from src.misc.callback_factories import PostRequestValidationCallback
-from config import OWNER_IDS, CHANNEL_ID
+from config import PUBLICATION_CHANNEL_ID, APPROVING_CHANNEL_ID
 from src.misc.enums import UsageStatus
 
 
@@ -42,8 +42,7 @@ async def send_post_to_admins_approving(bot: Bot, post: PostRequest):
     text = await get_post_text(bot=bot, post=post)
     markup = get_approve_or_deny_post(post=post)
 
-    for admin_id in OWNER_IDS:
-        await bot.send_message(chat_id=admin_id, text=text, reply_markup=markup)
+    await bot.send_message(chat_id=APPROVING_CHANNEL_ID, text=text, reply_markup=markup)
 
 
 async def handle_deny_request(callback: CallbackQuery):
@@ -69,7 +68,7 @@ async def handle_confirm_request(callback: CallbackQuery, callback_data: PostReq
     )
     text = f"<b>Заявка №{publication.number}</b> \n\n{post_text} \n\n{footer_text}"
 
-    await callback.bot.send_message(chat_id=CHANNEL_ID, text=text)
+    await callback.bot.send_message(chat_id=PUBLICATION_CHANNEL_ID, text=text)
 
 
 def handle_requests_confirmation_handlers(router: Router):

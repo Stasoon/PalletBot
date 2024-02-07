@@ -10,7 +10,7 @@ class UserKeyboards:
     @staticmethod
     def get_create_request() -> ReplyKeyboardMarkup:
         builder = ReplyKeyboardBuilder()
-        builder.button(text='➕ Создать заявку ➕')
+        builder.button(text='Создать заявку')
         return builder.as_markup(resize_keyboard=True)
 
     @staticmethod

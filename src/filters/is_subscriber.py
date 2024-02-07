@@ -6,7 +6,7 @@ from aiogram.exceptions import AiogramError
 from aiogram.filters import BaseFilter
 from aiogram.types import Message, CallbackQuery
 
-from config import CHANNEL_ID
+from config import PUBLICATION_CHANNEL_ID
 from src.utils import logger
 
 
@@ -21,7 +21,7 @@ class IsSubscriberFilter(BaseFilter):
 
     @staticmethod
     def get_channels_to_subscribe() -> list[int]:
-        return [CHANNEL_ID]
+        return [PUBLICATION_CHANNEL_ID]
 
     @classmethod
     async def is_user_subscribed(cls, bot: Bot, user_id: int) -> bool:
