@@ -1,6 +1,13 @@
 from enum import Enum
 
 
+class ProductType(str, Enum):
+    PALLETS = 'Поддоны'
+    CONTAINERS = 'Ящики'
+    PALLET_COVER = 'Паллетные крышки'
+    PALLET_BOARDS = 'Паллетные борта'
+
+
 class DealType(Enum):
     BUY = 'Покупка'
     CELL = 'Продажа'
@@ -38,6 +45,15 @@ class PaymentTerms(Enum):
 class PalletSort(Enum):
     FIRST = '1'
     SECOND = '2'
+    THIRD = '3'
+
+    def __str__(self):
+        return self.value
+
+
+class ProductMaterial(Enum):
+    WOODEN = 'Деревянные'
+    PLASTIC = 'Пластиковые'
 
     def __str__(self):
         return self.value

@@ -5,15 +5,28 @@ class UserMessages:
 
     @staticmethod
     def get_welcome(user_name: str) -> str:
-        return f'👋 Привет, {html.quote(user_name)}!'
+        return (
+            f'Добро пожаловать на биржу PallePrice! \n'
+            'Хочешь купить или продать поддоны, паллетные борта, крышки, ящики? \n\n'
+        
+            'Жми на кнопку "ХОЧУ" ниже и следуй инструкции.'
+        )
+
+    @staticmethod
+    def ask_for_product_type() -> str:
+        return 'Выберите тип товара:'
 
     @staticmethod
     def ask_for_deal_type() -> str:
-        return 'Выберите тип сделки:'
+        return 'Выбирай: купить или продать?'
 
     @staticmethod
     def ask_for_usage_status() -> str:
         return 'Новый или БУ?'
+
+    @staticmethod
+    def ask_for_material() -> str:
+        return 'Выберите материал:'
 
     @staticmethod
     def ask_for_delivery_terms() -> str:
@@ -50,4 +63,8 @@ class UserMessages:
     @staticmethod
     def ask_for_email() -> str:
         return '✉ Введите адрес вашей электронной почты: '
+
+    @staticmethod
+    def get_product_type_unknown() -> str:
+        return 'Пожалуйста, выберите тип товара из списка!'
 

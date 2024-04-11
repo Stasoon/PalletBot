@@ -2,7 +2,15 @@ from typing import Literal
 
 from aiogram.filters.callback_data import CallbackData
 
-from src.misc.enums import DealType, DeliveryOption, UsageStatus, PaymentTerms, PalletSort
+from src.misc.enums import DealType, DeliveryOption, UsageStatus, PaymentTerms, PalletSort, ProductType, ProductMaterial
+
+
+class ProductTypeCallback(CallbackData, prefix='product_type'):
+    product_type: ProductType
+
+
+class MaterialCallback(CallbackData, prefix='material'):
+    material: ProductMaterial
 
 
 class DealTypeCallback(CallbackData, prefix='deal_type'):

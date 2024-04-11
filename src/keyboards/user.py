@@ -1,11 +1,17 @@
 from aiogram.utils.keyboard import InlineKeyboardBuilder, InlineKeyboardMarkup, ReplyKeyboardMarkup, ReplyKeyboardBuilder
 
 from src.misc.callback_factories import DealTypeCallback, DeliveryOptionCallback, UsageStatusCallback, SizeCallback, \
-    PaymentTermsCallback, PalletSortCallback
-from src.misc.enums import DealType, DeliveryOption, UsageStatus, PaymentTerms, PalletSort
+    PaymentTermsCallback, PalletSortCallback, ProductTypeCallback, MaterialCallback
+from src.misc.enums import DealType, DeliveryOption, UsageStatus, PaymentTerms, PalletSort, ProductType, ProductMaterial
 
 
 class UserKeyboards:
+
+    @staticmethod
+    def get_want_to_create_request() -> ReplyKeyboardMarkup:
+        builder = ReplyKeyboardBuilder()
+        builder.button(text='ХОЧУ')
+        return builder.as_markup(resize_keyboard=True)
 
     @staticmethod
     def get_create_request() -> ReplyKeyboardMarkup:
@@ -20,10 +26,24 @@ class UserKeyboards:
         return builder.as_markup(resize_keyboard=True)
 
     @staticmethod
+    def get_product_types() -> ReplyKeyboardMarkup:
+        builder = ReplyKeyboardBuilder()
+
+        for product_type in ProductType:
+            builder.button(text=product_type)
+
+        cancel_builder = ReplyKeyboardBuilder()
+        builder.button(text='Отменить')
+
+        builder.attach(cancel_builder)
+        builder.adjust(2)
+        return builder.as_markup(resize_keyboard=True)
+
+    @staticmethod
     def get_deal_types() -> InlineKeyboardMarkup:
         builder = InlineKeyboardBuilder()
-        builder.button(text='🛒 Покупка', callback_data=DealTypeCallback(deal_type=DealType.BUY))
-        builder.button(text='💸 Продажа', callback_data=DealTypeCallback(deal_type=DealType.CELL))
+        builder.button(text='🛒 Хочу купить', callback_data=DealTypeCallback(deal_type=DealType.BUY))
+        builder.button(text='💸 Хочу продать', callback_data=DealTypeCallback(deal_type=DealType.CELL))
         builder.adjust(1)
         return builder.as_markup()
 
@@ -32,6 +52,14 @@ class UserKeyboards:
         builder = InlineKeyboardBuilder()
         builder.button(text='🆕 Новый', callback_data=UsageStatusCallback(status=UsageStatus.NEW))
         builder.button(text='🗜 Б/У', callback_data=UsageStatusCallback(status=UsageStatus.USED))
+        builder.adjust(1)
+        return builder.as_markup()
+
+    @staticmethod
+    def get_materials() -> InlineKeyboardMarkup:
+        builder = InlineKeyboardBuilder()
+        builder.button(text='Деревянные', callback_data=MaterialCallback(material=ProductMaterial.WOODEN))
+        builder.button(text='Пластиковые', callback_data=MaterialCallback(material=ProductMaterial.PLASTIC))
         builder.adjust(1)
         return builder.as_markup()
 
@@ -57,6 +85,7 @@ class UserKeyboards:
         builder = InlineKeyboardBuilder()
         builder.button(text='Первый (1)', callback_data=PalletSortCallback(sort=PalletSort.FIRST))
         builder.button(text='Второй (2)', callback_data=PalletSortCallback(sort=PalletSort.SECOND))
+        builder.button(text='Третий (3)', callback_data=PalletSortCallback(sort=PalletSort.THIRD))
         builder.adjust(1)
         return builder.as_markup()
 

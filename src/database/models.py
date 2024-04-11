@@ -5,7 +5,7 @@ from peewee import (
     ForeignKeyField, Field
 )
 
-from src.misc.enums import DealType, UsageStatus, DeliveryOption, PaymentTerms, PalletSort
+from src.misc.enums import DealType, UsageStatus, DeliveryOption, PaymentTerms, PalletSort, ProductMaterial
 
 db = SqliteDatabase(
     database='data.db'
@@ -53,13 +53,18 @@ class PostRequest(_BaseModel):
 
     number = IntegerField(primary_key=True, unique=True, null=False)
     user = ForeignKeyField(model=User)
-    deal_type = EnumField(enum_class=DealType)
+
+    product_type = CharField()
+    size = CharField()
+    sort = EnumField(enum_class=PalletSort)
+    material = EnumField(enum_class=ProductMaterial)
+
     usage_status = EnumField(enum_class=UsageStatus)
     delivery_option = EnumField(enum_class=DeliveryOption)
     address = CharField(max_length=800)
     payment_terms = EnumField(enum_class=PaymentTerms)
-    size = CharField()
-    sort = EnumField(enum_class=PalletSort)
+
+    deal_type = EnumField(enum_class=DealType)
     cost = CharField(null=True)
     phone_number = CharField()
     email = CharField(null=True)

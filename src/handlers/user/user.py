@@ -11,11 +11,14 @@ from src.keyboards.user import UserKeyboards
 from src.messages.user import UserMessages
 from src.database.users import create_user_if_not_exist
 from src.misc.callback_factories import DealTypeCallback, UsageStatusCallback, DeliveryOptionCallback, SizeCallback, \
-    PaymentTermsCallback, PalletSortCallback
-from src.misc.enums import DeliveryOption
+    PaymentTermsCallback, PalletSortCallback, MaterialCallback
+from src.misc.enums import DeliveryOption, ProductType, DealType
 
 
 class RequestCreatingStates(StatesGroup):
+    enter_product_type = State()
+    enter_material = State()
+
     enter_deal_type = State()
 
     enter_usage_status = State()
@@ -47,12 +50,13 @@ async def handle_start_command(message: Message, state: FSMContext):
     create_user_if_not_exist(telegram_id=user.id, firstname=user.first_name, username=user.username)
 
     text = UserMessages.get_welcome(user_name=user.first_name)
-    await message.answer(text=text, reply_markup=UserKeyboards.get_create_request())
+    await message.answer(text=text, reply_markup=UserKeyboards.get_want_to_create_request())
 
 
 async def handle_create_request_button(message: Message, state: FSMContext):
     await state.clear()
-    await message.answer('Хорошо! Давайте создадим заявку', reply_markup=UserKeyboards.get_cancel_reply())
+
+    await message.answer(text='Мне нравиться твое желание!', reply_markup=UserKeyboards.get_cancel_reply())
     await message.answer(text=UserMessages.ask_for_deal_type(), reply_markup=UserKeyboards.get_deal_types())
     await state.set_state(RequestCreatingStates.enter_deal_type)
 
@@ -60,7 +64,35 @@ async def handle_create_request_button(message: Message, state: FSMContext):
 async def handle_deal_type_callback(callback: CallbackQuery, callback_data: DealTypeCallback, state: FSMContext):
     await state.update_data(deal_type=callback_data.deal_type)
 
-    await callback.message.edit_text(text=f"🔸Тип сделки: <b>{callback_data.deal_type}</b>", reply_markup=None)
+    text = f"🔸<b>{'Покупка' if callback_data.deal_type == DealType.BUY else 'Продажа'}</b>"
+    await callback.message.edit_text(text=text, reply_markup=None)
+
+    await callback.message.answer(text=UserMessages.ask_for_product_type(), reply_markup=UserKeyboards.get_product_types())
+    await state.set_state(RequestCreatingStates.enter_product_type)
+
+
+async def handle_product_type_button(message: Message, state: FSMContext):
+    if message.text not in (t for t in ProductType):
+        await message.answer(
+            text=UserMessages.get_product_type_unknown(),
+            reply_markup=UserKeyboards.get_product_types()
+        )
+        return
+
+    await state.update_data(product_type=message.text)
+    await message.answer(text=f'🔸Тип товара: <b>{message.text}</b>', reply_markup=UserKeyboards.get_cancel_reply())
+
+    await message.answer(
+        text=UserMessages.ask_for_material(),
+        reply_markup=UserKeyboards.get_materials()
+    )
+    await state.set_state(RequestCreatingStates.enter_material)
+    
+
+async def handle_product_material_callback(callback: CallbackQuery, callback_data: MaterialCallback, state: FSMContext):
+    await callback.message.edit_text(text=f'🔸Материал: <b>{callback_data.material}</b>')
+    await state.update_data(material=callback_data.material)
+
     await callback.message.answer(
         text=UserMessages.ask_for_usage_status(),
         reply_markup=UserKeyboards.get_usage_statuses()
@@ -199,7 +231,8 @@ async def finish(data: dict, user_id: int, bot: Bot):
 
     user = users.get_user_or_none(telegram_id=user_id)
     post = PostRequest.create(
-        user=user, deal_type=data.get('deal_type'), usage_status=data.get('usage_status'),
+        user=user, product_type=data.get('product_type'), material=data.get('material'),
+        deal_type=data.get('deal_type'),  usage_status=data.get('usage_status'),
         delivery_option=data.get('delivery_option'), size=data.get('size'), cost=data.get('cost'),
         payment_terms=data.get('payment_terms'), sort=data.get('sort'),
         phone_number=data.get('phone_number'), address=data.get('address'), email=data.get('email')
@@ -217,8 +250,18 @@ def register_user_handlers(router: Router):
     # Кнопка "Создать заявку"
     router.message.register(
         handle_create_request_button,
-        F.text.lower().contains('создать заявку'),
+        F.text.lower().contains('хочу') | F.text.lower().contains('создать заявку'),
         StateFilter(default_state)
+    )
+
+    # Тип товара
+    router.message.register(handle_product_type_button, RequestCreatingStates.enter_product_type)
+
+    # Материал
+    router.callback_query.register(
+        handle_product_material_callback,
+        MaterialCallback.filter(),
+        RequestCreatingStates.enter_material
     )
 
     # Тип сделки (покупка / продажа)
